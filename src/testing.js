@@ -29,6 +29,7 @@ console.log(c.toBase("1.098.080.723.266", 75))
 
 // TESTING GZIP
 const data = require("./helpers/testdata.json")
+const { clear } = require("console")
 /*
 const data = require("./helpers/testdata.json")
 const dataText = data.toString()
@@ -93,7 +94,7 @@ const fgGreen =  '\x1b[32m'
 const bgGreen =  '\x1b[42m'
 const reset = '\x1b[0m'
 const bright = "\x1b[1m"
-const log = (data, msg) => console.log(`-----\n${fgGreen+bright}${msg?msg:""}:     |      length: ${data.length}${reset} \n${data}\n-----`) 
+const log = (data, msg) => console.log(`-----\n${fgGreen+bright}${msg?msg:""}:     |      length: ${data.length}${reset} \n${data}\n-----`)
 
 // console.log(data)
 //console.log(zipToURL(data))
@@ -124,7 +125,7 @@ const dataCompressionTest = (data) =>{
   const testData = JSON.stringify(data, null, "") 
   log(testData, "Test Data")
 
-  const ziped = g.zip(testData)
+  const ziped = g.zip(testData, {level: 6})
   log(ziped, "Ziped Bytes Array")
 
   const hex = c.dataToHex(ziped)
@@ -151,5 +152,21 @@ const lorem = "lorem ipsum dolor sit amet consectetur adipiscing elit sed do eiu
 
 // console.log(data3)
 
-let result = dataCompressionTest(data2)
+//let result = dataCompressionTest(JSON.stringify(data))
 // console.log(JSON.parse(result))
+
+
+// fetch('https://dummyjson.com/products/')
+// .then(res => res.json())
+// .then(json => {
+//   const data = json.products.slice(0,10)
+//   log(data)
+//   dataCompressionTest(JSON.stringify(data))
+//   }
+// )
+            
+
+const ziped = g.zip("123456789")
+let result = g.unzip(ziped)
+console.log("Unziped file: " + result)
+console.log("Length: " + result.length)
