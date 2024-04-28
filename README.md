@@ -63,11 +63,6 @@ But it was very enjoyable.
 
 I was able to srink **5.714** characters data JSON into a **1.662** characters b64 URL safe string.
 
-**Base 64 strings**
-When implementing the code I realized that using base 75 would be useless unless implementing a very smart time consuming algorithm for more data compression.
-
-The thing that I've made instead was just a data reorganization and simple math to be able to use less space when representing arrays of bytes data.
-
 Gzip compression is intended for files so it will work with raw bytes data.
 
 So if you use Gzip on a simple file. A string in this case
@@ -110,15 +105,51 @@ And each value represent each character on [UTF-8](https://en.wikipedia.org/wiki
 
 So for decoding this into the original string, there is a Javascript string prototype method fromCharCode() that can help us with that
 
-<p class="codepen" data-height="333" data-default-tab="js,result" data-slug-hash="abxxJNK" data-user="flou-ainan" style="height: 333px; box-sizing: border-box; display: flex; align-items: center; justify-content: center; border: 2px solid; margin: 1em 0; padding: 1em;">
-  <span>See the Pen <a href="https://codepen.io/flou-ainan/pen/abxxJNK">
-  String.fromCharCode()</a> by Flou-Ainan (<a href="https://codepen.io/flou-ainan">@flou-ainan</a>)
-  on <a href="https://codepen.io">CodePen</a>.</span>
-</p>
-<script async src="https://cpwebassets.codepen.io/assets/embed/ei.js"></script>
+[Play in CodePen ➡️](https://codepen.io/flou-ainan/pen/abxxJNK?editors=1010)
+[![](./public/fromCharCode.jpg)](https://codepen.io/flou-ainan/pen/abxxJNK?editors=1010)
 
+So in my previous example:
+```js
+const g = require("gzip-js")
+const ziped = g.zip("123456789")
+let unziped = g.unzip(ziped)
+let result = ""
+unziped.forEach(charCode => result+= String.fromCharCode(charCode))
 
+console.log("Ziped File: "+ ziped)
+console.log("Unziped file: " + unziped)
+console.log("Original: " + result)
+```
+```sh
+CONSOLE |
+-------- 
+Ziped File: 31,139,8,0,110,166,46,102,0,3,51,52,50,54,49,53,51,183,176,4,0,38,57,244,203,9,0,0,0
+Unziped file: 49,50,51,52,53,54,55,56,57
+Original: 123456789
+```
+If we compress larger files that is the intention of this code. We can achieve awesome results. Like from **5.714** characters to **1.662** as mentioned before.
 
+### **Base 64 strings**
+When implementing the code I realized that using base 75 would be useless unless implementing a very smart time consuming algorithm for more data compression.
 
+The thing that I've made instead was just a data reorganization and simple math to be able to use less space when representing arrays of bytes data.
 
+Usualy when we represent bytes in strings we use hexadecimal code.
+
+The text `1234` when turned into a bytes array become `[49,50,51,52]` and when ziped it will turn into another bytes array as seen before. But for this example we will assume that `[245,50,151,0]`is the ziped result.
+as explained before, each item is a byte that is a 0 to 255 value.
+
+We could use only numbers to represent bytes on strings like this. Removing all the commas and square brackets and fixing the pading size of the numbers. In this way we can now that at every 3 character we have a byte. Example:
+
+```
+[245,50,151,0] -> 245050151000
+
+if we slice on trios
+
+24505015100 -> 245 050 151 000
+
+we get the original bytes values
+```
+
+Usualy we would use [hexadecimal](https://en.wikipedia.org/wiki/Hexadecimal) values for this text representation because a [byte]() is essentialy a 8bits set. Bits are a base 2 number representation. So as base 16 (aka hex) being a multiple of 2 turn the things easier for representing and converting from bases.
 

@@ -165,8 +165,12 @@ const lorem = "lorem ipsum dolor sit amet consectetur adipiscing elit sed do eiu
 //   }
 // )
             
-
 const ziped = g.zip("123456789")
-let result = g.unzip(ziped)
-console.log("Unziped file: " + result)
-console.log("Length: " + result.length)
+let unziped = g.unzip(ziped)
+let result = ""
+unziped.forEach(charCode => result+= String.fromCharCode(charCode))
+
+console.log("Ziped File: "+ ziped)
+console.log("Unziped file: " + unziped)
+console.log("Original: " + result)
+
