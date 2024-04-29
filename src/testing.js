@@ -164,13 +164,41 @@ const lorem = "lorem ipsum dolor sit amet consectetur adipiscing elit sed do eiu
 //   dataCompressionTest(JSON.stringify(data))
 //   }
 // )
-            
-const ziped = g.zip("123456789")
-let unziped = g.unzip(ziped)
-let result = ""
-unziped.forEach(charCode => result+= String.fromCharCode(charCode))
+   
+// ------ String.fromCharCode --------
+// const ziped = g.zip("123456789")
+// let unziped = g.unzip(ziped)
+// let result = ""
+// unziped.forEach(charCode => result+= String.fromCharCode(charCode))
 
-console.log("Ziped File: "+ ziped)
-console.log("Unziped file: " + unziped)
-console.log("Original: " + result)
+// ------- Zip and Unzip Test --------
+const zipUnzipTest = () => {
+  console.log("Ziped File: "+ ziped)
+  console.log("Unziped file: " + unziped)
+  console.log("Original: " + result)
+}
+//zipUnzipTest()
 
+//  ------- Base conversion from docs -------
+const baseConvDocs01 = () => {
+  // -- Converting from decimal to hexadecimal --
+  let decBytes = [245, 50, 151, 0]
+  let hexBytes = decBytes.map(byte => c.toBase(byte, 16))
+  console.log("Hex Array: " + hexBytes)
+  
+  // -- Turning into a string --
+  // Fix paddin to 2 digits
+  hexBytes = hexBytes.map(byte=>byte.padStart(2,"0"))
+  console.log("Padded Hex Array: " + hexBytes)
+  // Join
+  let HexBytesString = hexBytes.join("")
+  console.log("Hex String: " + HexBytesString)
+}
+//baseConvDocs01()
+
+const baseConvDocs02 = () => {
+  let HexBytesString = "f5329700"
+  let result = c.hexToBytesArray(HexBytesString)
+  console.log(result)
+}
+baseConvDocs02()

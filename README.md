@@ -101,7 +101,7 @@ Length: 9
 As you can see this array have the same length of the original string.
 And each value represent each character on [UTF-8](https://en.wikipedia.org/wiki/UTF-8)/[ASCII](https://en.wikipedia.org/wiki/ASCII) text encoding system\
 [**ASCII Table ➡️**](https://en.wikipedia.org/wiki/ASCII#Printable_characters)\
-[![](./public/chartable.png)](https://en.wikipedia.org/wiki/ASCII#Printable_characters)
+[![](./public/chartable.jpg)](https://en.wikipedia.org/wiki/ASCII#Printable_characters)
 
 So for decoding this into the original string, there is a Javascript string prototype method fromCharCode() that can help us with that
 
@@ -151,5 +151,118 @@ if we slice on trios
 we get the original bytes values
 ```
 
-Usualy we would use [hexadecimal](https://en.wikipedia.org/wiki/Hexadecimal) values for this text representation because a [byte]() is essentialy a 8bits set. Bits are a base 2 number representation. So as base 16 (aka hex) being a multiple of 2 turn the things easier for representing and converting from bases.
+Usualy we would use [hexadecimal](https://en.wikipedia.org/wiki/Hexadecimal) values for this text representation because a [byte](https://en.wikipedia.org/wiki/Byte) is essentialy a 8bits set. [Bits](https://en.wikipedia.org/wiki/Bit) are a base 2 number representation. So as base 16 (aka hex) being a multiple of 2 turn the things easier for representing and converting from bases.
+
+### Base 16 strings
+
+HEX digits are:
+```
+hex      dec
+ 0   ->   0
+ 1   ->   1
+ 2   ->   2
+ 3   ->   3
+ 4   ->   4
+ 5   ->   5
+ 6   ->   6
+ 7   ->   7
+ 8   ->   8
+ 9   ->   9
+ a   ->   10
+ b   ->   11
+ c   ->   12
+ d   ->   13
+ e   ->   14
+ f   ->   15
+```
+
+So with only 2 digits we can represent the 255 possible values of a byte.
+
+See [base conversions](https://math.libretexts.org/Courses/College_of_the_Canyons/Math_130%3A_Math_for_Elementary_School_Teachers_(Lagusker)/02%3A_Empathy_and_Primary_Mathematics/2.06%3A_Converting_Between_(our)_Base_10_and_Any_Other_Base_(and_vice_versa)) if you dont understand next part.
+
+For example: 
+**49₁₀ -> hex**
+```
+49 / 16 = 3 -> 1₁₀ = 1₁₆
+3  / 16 = 0 -> 3₁₀ = 3₁₆
+
+49₁₀ = 31₁₆
+```
+
+In this case we wouldn't reduce the digits. but we can benefit from values bigger than 99.
+
+**245₁₀ -> hex**
+```
+245 / 16 = 15 -> 5₁₀  = 5₁₆
+15  / 16 = 0  -> 15₁₀ = f₁₆ 
+
+245₁₀ = 5f₁₆
+```
+
+
+
+So we could represent `245 050 151 000` as `5f 14 97 00` or\
+`245050151000` as `5f149700`
+
+In the [testing file](./src/testing.js).
+```js
+  const c = require("./helpers/utils")
+
+  // -- Converting from decimal to hexadecimal --
+  let decBytes = [245, 50, 151, 0]
+  let hexBytes = decBytes.map(byte => c.toBase(byte, 16))
+  console.log("Hex Array: " + hexBytes)
+  
+  // -- Turning into a string --
+  // Fix padding to 2 digits
+  hexBytes = hexBytes.map(byte=>byte.padStart(2,"0"))
+  console.log("Padded Hex Array: " + hexBytes)
+  // Join
+  let HexBytesString = hexBytes.join("")
+  console.log("Hex String: " + HexBytesString)
+```
+```sh
+CONSOLE |
+-------- 
+Hex Array: f5,32,97,0
+Padded Hex Array: f5,32,97,00
+Hex String: f5329700
+```
+<small>You should not iterate 2 times, and pad while converting instead, its just separated for clarification</small>
+
+Its important to fix the padding, otherwise we would loose the way back conversion. Because as we dont have separation chars, we need to slice on pairs.
+
+**Converting Back**
+```js
+  let HexBytesString = "f5329700"
+  let result = c.hexToBytesArray(HexBytesString)
+  console.log(result)
+```
+```
+CONSOLE | 
+-------- 
+[ 245, 50, 151, 0 ]
+```
+**hexToBytesArray** function from [utils script](./src/helpers/utils.js)
+```js
+// takes a hex string and return a bytes array
+exports.hexToBytesArray = (hexString) =>{
+    let result = ""
+    const separator = " "
+    // separate hex string on pairs
+    for(let i=0; i < hexString.length;i+=2){
+        result += hexString.slice(i,i+2) + separator
+    }
+    // removes useless separator in the end
+    result = result.slice(0,-1)
+    // turn string into array of hex bytes
+    result = result.split(" ")
+    //converts back each hex byte to decimal
+    result = result.map(hexByte => this.fromBase(hexByte, 16))
+    return result
+}
+```
+
+
+
 
