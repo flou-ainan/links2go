@@ -201,4 +201,6 @@ const baseConvDocs02 = () => {
   let result = c.hexToBytesArray(HexBytesString)
   console.log(result)
 }
-baseConvDocs02()
+//baseConvDocs02()
+log(c.fromBase('b0',16))
+log(c.fromBase('f0',16))

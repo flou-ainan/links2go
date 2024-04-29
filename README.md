@@ -130,7 +130,7 @@ Original: 123456789
 If we compress larger files that is the intention of this code. We can achieve awesome results. Like from **5.714** characters to **1.662** as mentioned before.
 
 ### **Base 64 strings**
-When implementing the code I realized that using base 75 would be useless unless implementing a very smart time consuming algorithm for more data compression.
+When implementing the code I realized that using base 75 would be useless unless implementing a very smart and time consuming to build algorithm for more data compression.
 
 The thing that I've made instead was just a data reorganization and simple math to be able to use less space when representing arrays of bytes data.
 
@@ -139,7 +139,8 @@ Usualy when we represent bytes in strings we use hexadecimal code.
 The text `1234` when turned into a bytes array become `[49,50,51,52]` and when ziped it will turn into another bytes array as seen before. But for this example we will assume that `[245,50,151,0]`is the ziped result.
 as explained before, each item is a byte that is a 0 to 255 value.
 
-We could use only numbers to represent bytes on strings like this. Removing all the commas and square brackets and fixing the pading size of the numbers. In this way we can now that at every 3 character we have a byte. Example:
+We could use only decimal numbers to represent bytes on strings like this. Removing all the commas and square brackets and fixing the number of digits of the values. In this way we can now that at every 3 character we have a byte. 
+Example:
 
 ```
 [245,50,151,0] -> 245050151000
@@ -196,13 +197,13 @@ In this case we wouldn't reduce the digits. but we can benefit from values bigge
 245 / 16 = 15 -> 5₁₀  = 5₁₆
 15  / 16 = 0  -> 15₁₀ = f₁₆ 
 
-245₁₀ = 5f₁₆
+245₁₀ = f5₁₆
 ```
 
 
 
-So we could represent `245 050 151 000` as `5f 14 97 00` or\
-`245050151000` as `5f149700`
+So we could represent `245 050 151 000` as `f5 32 97 00` or\
+`245050151000` as `f5329700`
 
 In the [testing file](./src/testing.js).
 ```js
@@ -232,6 +233,14 @@ Hex String: f5329700
 
 Its important to fix the padding, otherwise we would loose the way back conversion. Because as we dont have separation chars, we need to slice on pairs.
 
+In a example if you dont fix the number of digits when converting `[12,0,240]`
+the result would be:
+```
+12 = b | 0 = 0 | 240 = f0
+-> b0f0
+```
+If we slice it on pairs `b0 f0` when converting back it would result `[176, 240]` a data corruption.
+
 **Converting Back**
 ```js
   let HexBytesString = "f5329700"
@@ -250,7 +259,7 @@ exports.hexToBytesArray = (hexString) =>{
     let result = ""
     const separator = " "
     // separate hex string on pairs
-    for(let i=0; i < hexString.length;i+=2){
+    for(let i=0; i < hexString.length; i+=2 ){
         result += hexString.slice(i,i+2) + separator
     }
     // removes useless separator in the end
